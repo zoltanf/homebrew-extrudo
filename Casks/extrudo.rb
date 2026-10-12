@@ -3,8 +3,8 @@
 # not edit by hand. Install with `brew install --cask zoltanf/extrudo/extrudo`.
 
 cask "extrudo" do
-  version "0.5.0"
-  sha256 "245cae406a789b3c64e936da297fa2dca3f6b10f0d898f316026682a71a8a59f"
+  version "0.6.0"
+  sha256 "ce692caa4128398016a38f9e90b16c62ad74c9914c3d031cc6f1c1127377efde"
 
   url "https://github.com/zoltanf/extrudo/releases/download/v#{version}/extrudo-#{version}-mac-arm64.zip"
   name "Extrudo"
