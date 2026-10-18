@@ -3,8 +3,8 @@
 # not edit by hand. Install with `brew install --cask zoltanf/extrudo/extrudo`.
 
 cask "extrudo" do
-  version "0.7.0"
-  sha256 "5e26f7cdb47947911a22d999e8a0aee68d053af23b7299eeceb95a0b12d4e93d"
+  version "0.8.0"
+  sha256 "38c38e6349672929b8e54dcd91e51ade11fd615c5727b771377ed0eb57ce2dac"
 
   url "https://github.com/zoltanf/extrudo/releases/download/v#{version}/extrudo-#{version}-mac-arm64.zip"
   name "Extrudo"
@@ -21,14 +21,11 @@ cask "extrudo" do
   # — if an Intel zip ever exists, add an `on_intel` block).
   app "Extrudo.app"
 
-  caveats do
-    <<~EOS
-      Extrudo is signed ad hoc, not with an Apple certificate (ADR-0075:
-      signing is deferred until the app has users), so macOS asks before the
-      first open: open the app, then go to System Settings > Privacy &
-      Security and choose "Open Anyway" next to Extrudo. The app's own updater
-      only notifies on macOS, so `brew upgrade` is the update path.
-    EOS
+  # Extrudo is signed ad hoc (ADR-0075), so Gatekeeper blocks it while it is
+  # quarantined; the caveats say so. `{{appdir}}` is Homebrew's own step token,
+  # expanded at install time (render.mjs fills only the upper-case ones).
+  postflight_steps do
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Extrudo.app"]
   end
 
   # Electron's paths on macOS: userData is "Application Support/Extrudo" (the
@@ -43,4 +40,15 @@ cask "extrudo" do
     "~/Library/Saved Application State/org.extrudo.desktop.savedState",
     "~/Library/WebKit/org.extrudo.desktop",
   ]
+
+  caveats do
+    <<~EOS
+      Extrudo is signed ad hoc, not with an Apple certificate (ADR-0075:
+      signing is deferred until the app has users), so macOS would block it
+      while it is quarantined. This cask removes the quarantine attribute from
+      Extrudo.app after every install and upgrade, so it opens without a
+      prompt: install it only if you trust this tap. The app's own updater
+      only notifies on macOS, so `brew upgrade` is the update path.
+    EOS
+  end
 end
